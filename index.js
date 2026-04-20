@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'dist')))
 app.use("/api", Router)
 
 app.use((req, res) => {
-    express.static(path.join(__dirname, 'dist'))
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
 let port = process.env.PORT || 8000
