@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'dist')))
 app.use("/api", Router)
 
 app.use((req, res) => {
-    express.statis(path.join(__dirname, 'dist'))
+    express.static(path.join(__dirname, 'dist'))
 })
 
 let port = process.env.PORT || 8000
