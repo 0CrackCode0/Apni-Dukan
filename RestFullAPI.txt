@@ -1,0 +1,168 @@
+RestFullAPI:- Frontend + Backend(Node.js,Express.js), DataBase (MongoDB)
+
+A RESTful API (Representational State Transfer) is an architectural style for designing networked applications that allow two software systems to exchange information over the internet. It serves as a "contract" between a client (like a mobile app) and a server (where data is stored), ensuring they can communicate in a standardized, predictable way.
+
+Core Concepts:-
+
+Resources: In REST, everything is a "resource" whether it's a user, a product, or a photo. Each resource is identified by a unique URL (e.g., https://api.example.com/users/123).
+
+HTTP Methods : Instead of custom commands, REST uses standard web "verbs" to perform actions:-
+
+1. GET: Retrieve data (Read).
+2. POST: Create a new resource.
+3. PUT/PATCH: Update an existing resource.
+4. DELETE: Remove a resource.
+
+
+Representations : When you request data, the server sends a "representation" of that resource's current state, typically in JSON or XML format. 
+
+Key Design Principles : For an API to be truly "RESTful," it must follow these constraints:-
+
+Statelessness: Each request must contain all the information needed to process it. The server does not remember past interactions or store "session" data.
+
+Client-Server Separation : The user interface (client) and data storage (server) are independent. You can update your mobile app's look without changing how the database works.
+
+
+Uniform Interface : All requests for the same resource should look the same, regardless of where they come from, using consistent naming (e.g., using nouns like /books instead of verbs like /getBooks).
+
+Cacheability : Responses must specify if they can be cached to improve performance and reduce server load.
+
+Layered System : A client shouldn't be able to tell if it’s connected directly to the end server or an intermediary like a load balancer. 
+
+Popular Examples : GitHub REST API: Allows developers to interact with repositories and issues.
+
+
+---- Now we're gonna build an RESTApi project ----
+>> using FrontEnd (React) + Backend (Node,Express and MongoDB)
+
+<<-- Steps -->>
+
+> Create a Server folder
+> Open in VScode
+> Run commands:-
+ >> npm inti -y
+ >> npm i express
+ >> npm i mongoose
+ >> npm i dotenv
+ >> npm i mailer
+ >> npm i jsonwebtoken
+
+JWT : JSON WEB TOKEN (To secure the API's)
+
+1. Definition
+JWT (JSON Web Token) is a compact, URL-safe token format used for secure information exchange between parties, typically for authentication and authorization in web applications.
+
+A JWT consists of three parts, separated by dots: Header.Payload.Signature
+
+Example:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJ1c2VySWQiOjEyMywiZXhwIjoxNzAwMDAwMDB9.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+(a) Header
+Contains:
+alg → Signing algorithm (e.g., HS256, RS256)
+typ → Token type (JWT)
+
+(b) Payload
+Contains claims (data):
+Registered claims: iss, sub, exp, iat
+Public claims
+Private claims (custom data like userId, role)
+
+(c) Signature
+Created by:
+HMACSHA256(
+  base64UrlEncode(header) + "." + base64UrlEncode(payload),
+  secret
+)
+
+3. Key Characteristics
+Stateless (no server session storage required)
+Compact (suitable for HTTP headers)
+Digitally signed (prevents tampering)
+Can also be encrypted (JWE)
+
+4. Common Use Cases
+User authentication (login systems)
+API authorization (Bearer tokens)
+Single Sign-On (SSO)
+Microservices communication
+
+5. Advantages
+Scalable (no session storage)
+Cross-domain friendly
+Easy to transmit via HTTP headers
+
+6. Disadvantages
+Cannot be revoked easily (unless using blacklists)
+Larger than session IDs
+Payload is readable (not encrypted by default)
+
+7. Security Best Practices
+Always use HTTPS
+Keep token expiration short (exp)
+Store securely (avoid localStorage if possible)
+Use strong signing algorithms (RS256 preferred for production)
+
+RBAC in Node.jsonwebtoken
+
+1. Definition
+RBAC (Role-Based Access Control) in Node.js is an authorization mechanism where users are assigned roles, and roles define permissions to access routes or perform actions.
+
+2. Basic Flow
+User → Login → JWT (contains role)
+     → Request API
+     → Middleware checks role
+     → Allow / Deny access
+
+3. Core Components
+User → Has a role
+Role → Defines access level (admin, user, manager)
+Permission → Specific action (read, write, delete)
+Middleware → Enforces authorization
+
+4. Implementation Steps in Express
+1. Authentication (JWT)
+Verify user
+Generate token with role inside payload
+jwt.sign({ id: user.id, role: user.role }, SECRET_KEY);
+
+2. Auth Middleware
+function authenticate(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+3. Role Authorization Middleware
+function authorizeRoles(...roles) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+}
+
+5. Route Protection Example
+app.get("/admin",
+  authenticate,
+  authorizeRoles("admin"),
+  handler
+);
+
+6. Production-Level RBAC
+Store roles in database
+Map roles → permissions
+Use permission-based checks instead of hardcoded roles
+Implement refresh tokens
+Keep JWT expiry short
+
+7. Advantages
+Scalable
+Centralized access control
+Cleaner route security
