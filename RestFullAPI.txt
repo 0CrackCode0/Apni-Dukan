@@ -166,3 +166,6 @@ Keep JWT expiry short
 Scalable
 Centralized access control
 Cleaner route security
+
+
+npm start = nonemodn index.js
